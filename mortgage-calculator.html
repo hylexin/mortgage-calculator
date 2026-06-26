@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mortgage Calculator with Taxes, Insurance, PMI and Amortization</title>
-  <meta name="description" content="Free mortgage calculator with taxes, insurance, PMI, HOA fees, extra payments, biweekly payments, payoff date, and a full amortization schedule.">
+  <meta name="description" content="Free mortgage calculator to estimate monthly payments with taxes, insurance, PMI, HOA, extra payments, biweekly payments, payoff date, and amortization schedule. No signup required.">
   <meta name="robots" content="index,follow">
   <meta property="og:title" content="Mortgage Calculator with Taxes, Insurance, PMI and Amortization">
   <meta property="og:description" content="Estimate monthly mortgage payments with taxes, insurance, PMI, HOA fees, extra payments, payoff date, and amortization.">
@@ -13,8 +13,8 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Mortgage Calculator with Taxes, Insurance, PMI and Amortization",
+    "@type": "WebApplication",
+    "name": "Mortgage Calculator",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "offers": {
@@ -224,6 +224,27 @@
       line-height: 1.45;
     }
 
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 11px;
+      border: 1px solid var(--line-soft);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #515154;
+      font-size: 13px;
+      font-weight: 650;
+      box-shadow: var(--shadow-soft);
+    }
+
     .ad-slot {
       display: grid;
       place-items: center;
@@ -280,6 +301,38 @@
       line-height: 1.25;
       letter-spacing: 0;
       font-weight: 720;
+    }
+
+    .input-helper {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 18px;
+      padding: 14px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: #f5f5f7;
+    }
+
+    .input-helper p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .input-group-title {
+      margin: 18px 0 2px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+      color: #515154;
+      font-size: 13px;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .input-group-title:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
     }
 
     .field {
@@ -360,6 +413,18 @@
       margin-bottom: 20px;
     }
 
+    .summary-grid .metric.primary {
+      grid-column: span 2;
+      background: linear-gradient(180deg, #ffffff, #f4f8ff);
+      border-color: rgba(0, 113, 227, 0.18);
+    }
+
+    .summary-grid .metric.primary strong {
+      color: var(--accent);
+      font-size: clamp(32px, 4.5vw, 48px);
+      letter-spacing: 0;
+    }
+
     .metric {
       min-width: 0;
       padding: 16px;
@@ -412,6 +477,28 @@
       margin-top: 6px;
       border-radius: 999px;
       background: var(--accent-2);
+    }
+
+    .extra-insight {
+      display: none;
+      margin: 0 0 18px;
+      padding: 15px;
+      border: 1px solid rgba(0, 113, 227, 0.18);
+      border-radius: var(--radius);
+      background: #f3f8ff;
+      color: #1d3657;
+      font-size: 14px;
+    }
+
+    .extra-insight.is-visible {
+      display: block;
+    }
+
+    .extra-insight strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-size: 15px;
     }
 
     .breakdown {
@@ -719,6 +806,10 @@
         grid-template-columns: 1fr;
       }
 
+      .summary-grid .metric.primary {
+        grid-column: auto;
+      }
+
       .bar-row {
         grid-template-columns: 96px 1fr;
       }
@@ -783,15 +874,28 @@
 
     <header class="hero">
       <div>
-        <h1>Mortgage Calculator with Taxes, Insurance, PMI and Amortization</h1>
-        <p class="intro">Estimate your monthly mortgage payment with taxes, insurance, PMI, HOA fees, extra payments, biweekly payments, payoff date, and a complete amortization schedule.</p>
+        <h1>Mortgage Calculator</h1>
+        <p class="intro">Estimate your monthly mortgage payment, including principal, interest, property taxes, homeowners insurance, PMI, HOA fees, and extra payments. No signup required. Your inputs stay in your browser.</p>
+        <div class="trust-badges" aria-label="Calculator trust notes">
+          <span class="trust-badge">Free</span>
+          <span class="trust-badge">No signup</span>
+          <span class="trust-badge">Runs in your browser</span>
+          <span class="trust-badge">Privacy-friendly</span>
+        </div>
       </div>
       <div class="ad-slot" aria-label="Advertisement">Advertisement</div>
     </header>
 
     <div class="layout" id="calculator">
       <section class="inputs" aria-labelledby="input-title">
-        <h2 class="section-title" id="input-title">Loan inputs</h2>
+        <h2 class="section-title" id="input-title">Mortgage Details</h2>
+
+        <div class="input-helper">
+          <p>Not sure what to enter? Start with sample values and adjust them.</p>
+          <button type="button" id="useSampleValues">Use sample values</button>
+        </div>
+
+        <h3 class="input-group-title">Loan Details</h3>
 
         <div class="field">
           <label for="homePrice">Home price <span class="unit">USD</span></label>
@@ -823,11 +927,13 @@
           <p class="hint">The number of years used to repay the mortgage, commonly 15 or 30 years.</p>
         </div>
 
+        <h3 class="input-group-title">Taxes, Insurance & Fees</h3>
+
         <div class="field">
-          <div class="label-row">Property tax <span class="unit">rate or amount</span></div>
+          <div class="label-row">Property taxes <span class="unit">rate or amount</span></div>
           <div class="split">
-            <input id="propertyTax" type="number" min="0" step="0.01" value="1.2" inputmode="decimal" aria-label="Property tax">
-            <select id="propertyTaxType" aria-label="Property tax type">
+            <input id="propertyTax" type="number" min="0" step="0.01" value="1.2" inputmode="decimal" aria-label="Property taxes">
+            <select id="propertyTaxType" aria-label="Property taxes type">
               <option value="percent">Annual %</option>
               <option value="annual">Annual $</option>
               <option value="monthly">Monthly $</option>
@@ -861,15 +967,17 @@
         </div>
 
         <div class="field">
-          <label for="extraPayment">Extra monthly payment <span class="unit">USD</span></label>
-          <input id="extraPayment" type="number" min="0" step="25" value="0" inputmode="decimal">
-          <p class="hint">Optional extra principal payment. It can reduce total interest and shorten payoff time.</p>
-        </div>
-
-        <div class="field">
           <label for="hoa">HOA fees <span class="unit">monthly USD</span></label>
           <input id="hoa" type="number" min="0" step="25" value="0" inputmode="decimal">
           <p class="hint">Homeowners association fees are not part of the loan, but they affect your monthly housing budget.</p>
+        </div>
+
+        <h3 class="input-group-title">Extra Payments</h3>
+
+        <div class="field">
+          <label for="extraPayment">Extra monthly payment <span class="unit">USD</span></label>
+          <input id="extraPayment" type="number" min="0" step="25" value="0" inputmode="decimal">
+          <p class="hint">Optional extra principal payment. It can reduce total interest and shorten payoff time.</p>
         </div>
 
         <div class="field">
@@ -879,12 +987,12 @@
         </div>
 
         <div class="field">
-          <label for="paymentFrequency">Payment frequency <span class="unit">monthly or bi-weekly</span></label>
+          <label for="paymentFrequency">Payment schedule <span class="unit">monthly or biweekly</span></label>
           <select id="paymentFrequency">
             <option value="monthly">Monthly</option>
-            <option value="biweekly">Bi-weekly</option>
+            <option value="biweekly">Biweekly</option>
           </select>
-          <p class="hint">Bi-weekly mode estimates 26 half-payments per year, similar to making 13 monthly payments.</p>
+          <p class="hint">Biweekly mode estimates 26 half-payments per year, similar to making 13 monthly payments.</p>
         </div>
       </section>
 
@@ -892,7 +1000,7 @@
         <section class="panel" aria-labelledby="summary-title">
         <h2 class="section-title" id="summary-title">Mortgage Payment Calculator</h2>
           <div class="summary-grid">
-            <div class="metric">
+            <div class="metric primary">
               <span>Estimated monthly payment</span>
               <strong id="monthlyTotal">$0</strong>
             </div>
@@ -927,6 +1035,7 @@
           </div>
 
           <div class="takeaways" id="takeaways" aria-label="Key mortgage takeaways"></div>
+          <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
 
           <div class="breakdown">
             <div class="bars" id="bars"></div>
@@ -935,7 +1044,7 @@
         </section>
 
         <section class="panel" aria-labelledby="chart-title">
-          <h2 class="section-title" id="chart-title">Mortgage Amortization Calculator Charts</h2>
+          <h2 class="section-title" id="chart-title">Payment and Balance Charts</h2>
           <div class="chart-grid">
             <div class="chart">
               <div class="chart-visual" id="costChart" role="img" aria-label="Principal and interest chart"></div>
@@ -968,7 +1077,7 @@
         </section>
 
         <section class="panel" aria-labelledby="compare-title">
-          <h2 class="section-title" id="compare-title">15-Year vs 30-Year Mortgage Calculator</h2>
+          <h2 class="section-title" id="compare-title">15-Year vs. 30-Year Mortgage</h2>
           <p class="comparison-note" id="comparisonNote">Compare the monthly payment and lifetime interest difference between common U.S. mortgage terms.</p>
           <div class="comparison-grid" id="comparison"></div>
         </section>
@@ -1033,7 +1142,7 @@
           <p>A 15-year mortgage usually has a higher monthly payment but much lower total interest. A 30-year mortgage usually has a lower monthly payment but costs more interest over time. The right choice depends on cash flow, savings goals, and risk tolerance.</p>
 
           <h3>What is a bi-weekly mortgage payment?</h3>
-          <p>Bi-weekly payment plans split the monthly payment in half and make 26 payments per year. That equals roughly 13 monthly payments per year, which can reduce interest and shorten the loan term.</p>
+          <p>Biweekly payment plans split the monthly payment in half and make 26 payments per year. That equals roughly 13 monthly payments per year, which can reduce interest and shorten the loan term.</p>
 
           <h3>How does the mortgage payoff calculator work?</h3>
           <p>The payoff estimate starts with the selected loan term and then applies extra monthly principal payments or biweekly payment savings. The result shows the estimated payoff date and the number of months saved.</p>
@@ -1112,6 +1221,7 @@
       totalPmi: document.querySelector("#totalPmi"),
       monthsSaved: document.querySelector("#monthsSaved"),
       takeaways: document.querySelector("#takeaways"),
+      extraInsight: document.querySelector("#extraInsight"),
       bars: document.querySelector("#bars"),
       pmiNote: document.querySelector("#pmiNote"),
       tableSummary: document.querySelector("#tableSummary"),
@@ -1121,6 +1231,7 @@
       downloadCsv: document.querySelector("#downloadCsv"),
       shareCalculation: document.querySelector("#shareCalculation"),
       printPage: document.querySelector("#printPage"),
+      useSampleValues: document.querySelector("#useSampleValues"),
       comparisonNote: document.querySelector("#comparisonNote"),
       comparison: document.querySelector("#comparison"),
       costChart: document.querySelector("#costChart"),
@@ -1437,7 +1548,7 @@
         : "PMI is not included in this estimate based on the current down payment and PMI settings.";
       const extraText = interestSaved > 0
         ? `Your extra payment settings save about ${money.format(interestSaved)} in interest and move payoff from ${formatMonth(standardPayoff)} to ${formatMonth(payoff)}.`
-        : "Add an extra monthly payment or choose biweekly payments to see how much interest and time you could save.";
+        : `Your estimated payoff date is ${formatMonth(payoff)} based on the current loan term and payment settings.`;
       const fifteen = buildSchedule({ ...input, termYears: 15, months: 180 });
       const thirty = buildSchedule({ ...input, termYears: 30, months: 360 });
       const fifteenMonthly = fifteen.rows[0] ? fifteen.rows[0].payment : 0;
@@ -1451,6 +1562,55 @@
         extraText,
         `A 15-year mortgage saves about ${money.format(termInterestSaved)} in interest but raises the estimated monthly payment by about ${moneyCents.format(monthlyIncrease)} versus a 30-year mortgage.`
       ].map((text) => `<div class="takeaway">${text}</div>`).join("");
+    }
+
+    function formatSavedTime(months) {
+      const years = Math.floor(months / 12);
+      const remainingMonths = months % 12;
+      const parts = [];
+      if (years > 0) parts.push(`${years} ${years === 1 ? "year" : "years"}`);
+      if (remainingMonths > 0) parts.push(`${remainingMonths} ${remainingMonths === 1 ? "month" : "months"}`);
+      return parts.length ? parts.join(" and ") : "0 months";
+    }
+
+    function renderExtraInsight(input, result, standardResult) {
+      const savedMonths = Math.max(0, standardResult.rows.length - result.rows.length);
+      const interestSaved = Math.max(0, standardResult.totalInterest - result.totalInterest);
+      const payoff = result.rows.length
+        ? addMonths(input.startDate, result.rows.length - 1)
+        : input.startDate;
+      const hasExtraStrategy = input.extraPayment > 0 || input.paymentFrequency === "biweekly";
+
+      if (!hasExtraStrategy || (savedMonths === 0 && interestSaved === 0)) {
+        els.extraInsight.classList.remove("is-visible");
+        els.extraInsight.innerHTML = "";
+        return;
+      }
+
+      els.extraInsight.classList.add("is-visible");
+      els.extraInsight.innerHTML = `
+        <strong>With your extra payment strategy</strong>
+        You could save about ${money.format(interestSaved)} in interest, pay off your loan ${formatSavedTime(savedMonths)} earlier, and reach a new estimated payoff date of ${formatMonth(payoff)}.
+      `;
+    }
+
+    function useSampleValues() {
+      fields.homePrice.value = "500000";
+      fields.downPayment.value = "20";
+      fields.downPaymentType.value = "percent";
+      fields.interestRate.value = "6.75";
+      fields.loanTerm.value = "30";
+      fields.propertyTax.value = "1.2";
+      fields.propertyTaxType.value = "percent";
+      fields.insurance.value = "1500";
+      fields.insuranceType.value = "annual";
+      fields.pmi.value = "0";
+      fields.pmiType.value = "percent";
+      fields.hoa.value = "0";
+      fields.extraPayment.value = "0";
+      fields.paymentFrequency.value = "monthly";
+      fields.startDate.value = currentMonthValue();
+      calculate();
     }
 
     function calculate() {
@@ -1493,6 +1653,7 @@
         : "PMI is not included because the down payment is at least 20%, the PMI value is zero, or no loan balance remains.";
 
       renderTakeaways(input, result, standardResult);
+      renderExtraInsight(input, result, standardResult);
       drawDonut(els.costChart, input.principal, result.totalInterest);
       drawBalance(els.balanceChart, result.rows);
       renderComparison(input);
@@ -1577,6 +1738,7 @@
     els.downloadCsv.addEventListener("click", downloadCsv);
     els.shareCalculation.addEventListener("click", shareCalculation);
     els.printPage.addEventListener("click", () => window.print());
+    els.useSampleValues.addEventListener("click", useSampleValues);
 
     loadState();
     calculate();
