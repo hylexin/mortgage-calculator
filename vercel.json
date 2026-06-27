@@ -1,16 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
+  "routes": [
     {
-      "source": "/mortgage-calculator.html",
-      "destination": "/",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
+      "src": "/mortgage-calculator.html",
+      "status": 308,
+      "headers": {
+        "Location": "/"
+      }
+    },
     {
-      "source": "/",
-      "destination": "/mortgage-calculator.html"
+      "src": "/",
+      "dest": "/mortgage-calculator.html"
     }
   ]
 }
