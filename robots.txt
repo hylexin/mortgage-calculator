@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hylexin.github.io/mortgage-calculator/sitemap.xml
+Sitemap: https://www.mortgagepaymentmath.com/sitemap.xml
