@@ -54,7 +54,7 @@
         "name": "When does PMI stop?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "This calculator estimates PMI until the loan balance reaches 80% of the home value. Actual cancellation rules depend on the lender and loan program."
+          "text": "This calculator assumes PMI stops when the loan balance reaches 80% of the purchase price. Actual cancellation rules depend on the loan, payment history, property value, and servicer."
         }
       },
       {
@@ -70,7 +70,7 @@
         "name": "What is included in PITI?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "PITI stands for principal, interest, taxes, and insurance. Some monthly payments may also include PMI and HOA fees."
+          "text": "PITI stands for principal, interest, taxes, and insurance. PMI may be included in a mortgage payment; HOA fees are usually paid separately."
         }
       },
       {
@@ -660,9 +660,9 @@
 
     .table-head {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 14px;
       padding: 20px 22px;
       border-bottom: 1px solid var(--line-soft);
     }
@@ -674,9 +674,26 @@
     }
 
     .table-head p {
-      margin: 0;
+      margin: 5px 0 0;
       color: var(--muted);
       font-size: 13px;
+    }
+
+    .table-head .table-actions {
+      justify-content: flex-start;
+    }
+
+    .table-head .share-note,
+    .table-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .table-description {
+      margin: 0;
+      padding: 10px 22px;
+      border-bottom: 1px solid var(--line-soft);
     }
 
     .table-actions {
@@ -920,7 +937,7 @@
     <header class="hero">
       <div>
         <h1>Mortgage Calculator</h1>
-        <p class="intro">Estimate your monthly mortgage payment, including principal, interest, property taxes, homeowners insurance, PMI, HOA fees, and extra payments. No signup required. Calculations run in your browser.</p>
+        <p class="intro">Estimate your monthly housing costs, including mortgage principal and interest, property taxes, homeowners insurance, PMI, and HOA fees. Add optional extra principal payments to explore your payoff. No signup required. Calculations run in your browser.</p>
         <div class="trust-badges" aria-label="Calculator trust notes">
           <span class="trust-badge">Free</span>
           <span class="trust-badge">No signup</span>
@@ -957,7 +974,7 @@
               <option value="percent">% percent</option>
             </select>
           </div>
-          <p class="hint">A larger down payment lowers the loan amount and can remove PMI at 20% down.</p>
+          <p class="hint">A larger down payment reduces the loan amount. For many conventional loans, putting at least 20% down may avoid PMI.</p>
         </div>
 
         <div class="field">
@@ -1008,7 +1025,7 @@
               <option value="monthly">Monthly $</option>
             </select>
           </div>
-          <p class="hint">Private mortgage insurance usually applies when the down payment is below 20%.</p>
+          <p class="hint">Private mortgage insurance is often required on conventional loans with less than 20% down. Rules vary by loan type and lender.</p>
         </div>
 
         <div class="field">
@@ -1073,7 +1090,7 @@
               <strong id="payoffDate">-</strong>
             </div>
             <div class="metric">
-              <span>Payments during loan term</span>
+              <span>Estimated costs during loan term</span>
               <strong id="totalPaid">$0</strong>
             </div>
             <div class="metric">
@@ -1086,7 +1103,7 @@
             </div>
           </div>
 
-          <p class="note">Based on your current inputs. Tax and insurance values are editable estimates, not location-specific quotes. Excludes closing costs, maintenance, utilities, and other ownership costs. Payments during the loan term exclude the down payment and costs after payoff.</p>
+          <p class="note">Based on your current inputs. Tax and insurance values are editable estimates, not location-specific quotes. Loan-term costs include estimated payments, taxes, insurance, PMI and HOA fees while the loan is outstanding. They exclude the down payment, closing costs, maintenance, utilities, and costs after payoff.</p>
           <div class="takeaways" id="takeaways" aria-label="Key mortgage takeaways"></div>
           <p><a href="#report">View your mortgage analysis report</a></p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
@@ -1109,16 +1126,20 @@
           <div class="table-head">
             <div>
               <h2 id="table-title">Mortgage Amortization Schedule</h2>
-              <p id="tableSummary">Monthly payment, principal, interest, taxes, insurance, PMI, extra payments, and remaining balance.</p>
+              <p id="tableSummary"></p>
+              <p id="biweeklyScheduleNote" hidden>Biweekly estimate: one extra annual principal-and-interest payment is spread across 12 months. Actual payment dates and savings may differ.</p>
             </div>
-            <div class="table-actions">
-              <button type="button" id="toggleSchedule">Show annual view</button>
-              <button type="button" id="downloadCsv">Download CSV</button>
-              <button type="button" id="shareCalculation">Share link</button>
-              <button type="button" id="printPage">Print</button>
+            <div>
+              <div class="table-actions">
+                <button type="button" id="toggleSchedule">Show annual view</button>
+                <button type="button" id="downloadCsv">Download CSV</button>
+                <button type="button" id="shareCalculation" aria-describedby="sharePrivacyNote">Share link</button>
+                <button type="button" id="printPage">Print</button>
+              </div>
+              <p class="share-note" id="sharePrivacyNote">A shared link contains your inputs. Anyone with the link can see them.</p>
             </div>
           </div>
-          <p class="note">Extra is included in Principal, not an additional charge to add again. Share links contain your inputs; anyone with the link can see them.</p>
+          <p class="table-description">In this table, the Principal column includes any extra principal payment. Do not add the Extra principal column again.</p>
           <div class="table-scroll">
             <table>
               <thead id="scheduleHead"></thead>
@@ -1134,10 +1155,10 @@
         </section>
         <section class="panel" id="report" aria-labelledby="report-title">
           <h2 class="section-title" id="report-title">Mortgage Analysis Report</h2>
-          <p>Preview a printable report based on your current calculation, including your assumptions, payment breakdown, and complete monthly amortization schedule.</p>
-          <p><strong>Free full report preview.</strong> No purchase is required. A paid report is planned for $4.99 USD, but is not available yet.</p>
-          <div class="table-actions"><button type="button" id="previewReport">Open report preview</button></div>
-          <p class="note">The preview can be printed or saved as a PDF using your browser. It is generated in your browser.</p>
+          <p>View a printable report based on your current calculation, including your assumptions, payment breakdown, and complete monthly amortization schedule.</p>
+          <p><strong>Free mortgage report.</strong> View the complete report without a purchase. A separate paid report is planned for $4.99 USD, but is not available yet.</p>
+          <div class="table-actions"><button type="button" id="previewReport">Open free report</button></div>
+          <p class="note">The report can be printed or saved as a PDF using your browser. It is generated in your browser.</p>
         </section>
       </div>
     </div>
@@ -1162,7 +1183,7 @@
           <p>Homeowners insurance protects the property against covered risks. The calculator lets you enter an annual or monthly insurance estimate. Your actual premium depends on location, coverage, deductible, home age, replacement cost, and insurer pricing.</p>
 
           <h3>PMI Calculator</h3>
-          <p>Private mortgage insurance, or PMI, is commonly required when the down payment is below 20% on a conventional mortgage. This calculator estimates PMI until the loan balance reaches 80% of the home price. Real cancellation rules can depend on the lender, loan type, payment history, and property value.</p>
+          <p>Private mortgage insurance, or PMI, is commonly required when the down payment is below 20% on a conventional mortgage. This calculator uses a simplified assumption that PMI stops when the loan balance reaches 80% of the purchase price. Actual cancellation depends on the loan, payment history, property value and servicer requirements; reaching that threshold does not necessarily end PMI automatically. FHA and other loan programs follow different rules.</p>
 
           <h3>Mortgage Calculator Extra Payments</h3>
           <p>Extra payments are applied to principal in this calculator. Paying extra principal can reduce the loan balance faster, lower lifetime interest, and shorten the payoff time. Even a small extra monthly amount can make a visible difference on a long-term mortgage.</p>
@@ -1199,7 +1220,7 @@
           <h3>Should I choose a 15-year or 30-year mortgage?</h3>
           <p>A 15-year mortgage usually has a higher monthly payment but much lower total interest. A 30-year mortgage usually has a lower monthly payment but costs more interest over time. The right choice depends on cash flow, savings goals, and risk tolerance.</p>
 
-          <h3>What is a bi-weekly mortgage payment?</h3>
+          <h3>What is a biweekly mortgage payment?</h3>
           <p>Biweekly plans can involve 26 half-payments per year. This calculator approximates an extra annual principal-and-interest payment spread across 12 months; it does not simulate each payment date. Actual servicing and savings may differ.</p>
 
           <h3>How does the mortgage payoff calculator work?</h3>
@@ -1240,14 +1261,15 @@
     </div>
 
     <footer>
-      <p>Privacy note: calculations run in your browser without an account. Share links include your inputs in the URL. See our privacy policy for details.</p>
-      <p>Last updated: June 18, 2026. Ads may appear on the site to help keep the calculator free.</p>
+      <p><strong>Mortgage Payment Math</strong><br>Free mortgage estimates to help you explore your options.</p>
       <div class="footer-links">
         <a href="./about.html">About</a>
+        <a href="./contact.html">Contact</a>
         <a href="./privacy.html">Privacy Policy</a>
         <a href="./terms.html">Terms of Service</a>
-        <a href="./contact.html">Contact</a>
       </div>
+      <p>Estimates are for informational purposes only and are not financial, tax, legal, or lending advice.</p>
+      <p>&copy; 2026 Mortgage Payment Math</p>
     </footer>
   </main>
 
@@ -1284,6 +1306,7 @@
       bars: document.querySelector("#bars"),
       pmiNote: document.querySelector("#pmiNote"),
       tableSummary: document.querySelector("#tableSummary"),
+      biweeklyScheduleNote: document.querySelector("#biweeklyScheduleNote"),
       scheduleHead: document.querySelector("#scheduleHead"),
       scheduleBody: document.querySelector("#scheduleBody"),
       toggleSchedule: document.querySelector("#toggleSchedule"),
@@ -1547,7 +1570,7 @@
           <th>Insurance</th>
           <th>HOA</th>
           <th>PMI</th>
-          <th>Extra</th>
+          <th>Extra principal</th>
           <th>Balance</th>
         </tr>
       `;
@@ -1697,7 +1720,8 @@
       els.totalPaid.textContent = money.format(result.totalPaid);
       els.totalPmi.textContent = money.format(result.totalPmi);
       els.monthsSaved.textContent = savedMonths.toString();
-      els.tableSummary.textContent = result.rows.length ? `${result.rows.length} estimated monthly payments ending in ${formatMonth(payoff)}. Extra payments are applied to principal. The biweekly option approximates an extra annual payment spread monthly.` : "No loan balance. Property tax, insurance, and HOA costs may still apply.";
+      els.tableSummary.textContent = result.rows.length ? `${result.rows.length} estimated monthly payments. Estimated payoff: ${formatMonth(payoff)}.` : "No loan balance. Property tax, insurance, and HOA costs may still apply.";
+      els.biweeklyScheduleNote.hidden = input.paymentFrequency !== "biweekly" || !result.rows.length;
 
       els.bars.innerHTML = [
         buildBar("Principal & interest", first.principalPaid + first.interest - first.extraPrincipal, monthlyTotal, "#176b87"),
@@ -1709,8 +1733,8 @@
       ].join("");
 
       els.pmiNote.textContent = result.pmiApplies
-        ? `PMI is included because the down payment is below 20%. This estimate stops when the balance reaches ${money.format(result.pmiStopBalance)}.`
-        : "PMI is not included because the down payment is at least 20%, the PMI value is zero, or no loan balance remains.";
+        ? `Under this calculator's simplified assumption, PMI is included and stops when the balance reaches ${money.format(result.pmiStopBalance)}. Actual cancellation requirements vary.`
+        : "Under this calculator's assumptions, PMI is not included because the down payment is at least 20%, the PMI value is zero, or there is no loan balance. Actual loan requirements may differ.";
 
       renderTakeaways(input, result, standardResult);
       renderExtraInsight(input, result, standardResult);
@@ -1806,7 +1830,7 @@
       const first = result.rows[0];
       const firstHousingCost = first ? first.payment : input.monthlyTax + input.monthlyInsurance + input.monthlyHoa;
       const doc = report.document;
-      doc.title = "Mortgage Analysis Report Preview";
+      doc.title = "Mortgage Analysis Report";
       const style = doc.createElement("style");
       style.textContent = "*{box-sizing:border-box}body{font:14px/1.5 system-ui,sans-serif;color:#20242c;max-width:900px;margin:36px auto;padding:0 20px}h1{font-size:28px;line-height:1.2;margin:0 0 8px}h2{margin:32px 0 12px;font-size:19px}p{margin:8px 0}.muted{color:#596675}.hero{padding:20px 0;border-bottom:1px solid #dce2e8}.hero strong{display:block;font-size:36px;line-height:1.2;color:#126b83;overflow-wrap:anywhere}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}.item{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e7ebef}.item span:last-child{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}.note{color:#596675;font-size:12px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;text-align:right;border-bottom:1px solid #ddd;white-space:nowrap}th:first-child,td:first-child{text-align:left}button{padding:10px 14px;border:1px solid #c9d4da;border-radius:6px;background:#fff;cursor:pointer;font:inherit;font-weight:650}.scroll{overflow-x:auto}@media(max-width:560px){.grid{grid-template-columns:1fr}}@media print{button{display:none}body{margin:0;padding:0}thead{display:table-header-group}tr{break-inside:avoid}.scroll{overflow:visible}table{font-size:8px}th,td{padding:3px 2px}}";
       doc.head.append(style);
@@ -1829,7 +1853,7 @@
         doc.body.append(container);
         return container;
       };
-      add("h1", "Mortgage Analysis Report Preview");
+      add("h1", "Mortgage Analysis Report");
       add("p", "Free report. Estimates only; not a loan offer or financial advice.").className = "muted";
       const print = add("button", "Print or save as PDF");
       print.addEventListener("click", () => report.print());
@@ -1861,11 +1885,11 @@
         ["Extra principal per month", moneyCents.format(input.extraPayment)],
         ["Payment schedule", input.paymentFrequency === "biweekly" ? "Biweekly estimate" : "Monthly"],
         ["Estimated total interest", moneyCents.format(result.totalInterest)],
-        ["Payments during loan term", moneyCents.format(result.totalPaid)],
+        ["Estimated costs during loan term", moneyCents.format(result.totalPaid)],
         ["Estimated payoff", result.rows.length ? result.rows[result.rows.length - 1].label : "No loan balance"]
       ].forEach(([label, value]) => item(overview, label, value));
       add("h2", "Important assumptions");
-      add("p", "Tax and insurance values are editable estimates, not location-specific quotes. Closing costs, maintenance, utilities and other ownership costs are excluded. PMI uses a simplified estimate. The biweekly option spreads one extra annual principal-and-interest payment over 12 months; it does not model actual biweekly payment dates. Actual lender calculations may differ. Payments during the loan term include estimated recurring costs during that period, but not the down payment or costs after payoff.").className = "note";
+      add("p", "Tax and insurance values are editable estimates, not location-specific quotes. Closing costs, maintenance, utilities and other ownership costs are excluded. PMI uses a simplified estimate; actual cancellation requirements vary. The biweekly option spreads one extra annual principal-and-interest payment over 12 months; it does not model actual biweekly payment dates. Actual lender calculations may differ. Estimated costs during the loan term include loan payments, taxes, insurance, PMI and HOA fees while the loan is outstanding, but not the down payment or costs after payoff.").className = "note";
       add("h2", "Monthly amortization schedule");
       const scroll = doc.createElement("div");
       scroll.className = "scroll";
