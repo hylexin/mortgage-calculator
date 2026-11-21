@@ -94,7 +94,7 @@
         "name": "How does a biweekly mortgage calculator work?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A biweekly mortgage calculator estimates 26 half-payments per year, which is similar to making 13 monthly payments and can reduce interest."
+          "text": "This calculator approximates a biweekly plan by spreading one extra annual principal-and-interest payment across 12 months. It does not simulate actual biweekly payment dates."
         }
       },
       {
@@ -438,6 +438,36 @@
       color: var(--accent);
       font-size: clamp(32px, 4.5vw, 48px);
       letter-spacing: 0;
+    }
+
+    .result-primary {
+      padding: 2px 0 18px;
+    }
+
+    .result-primary span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result-primary strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--accent);
+      font-size: 36px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-breakdown {
+      margin-bottom: 24px;
+    }
+
+    .result-breakdown h3,
+    .result-details-title {
+      margin: 0 0 12px;
+      font-size: 16px;
     }
 
     .metric {
@@ -1007,18 +1037,25 @@
             <option value="monthly">Monthly</option>
             <option value="biweekly">Biweekly</option>
           </select>
-          <p class="hint">Biweekly mode estimates 26 half-payments per year, similar to making 13 monthly payments.</p>
+          <p class="hint">Biweekly mode approximates one extra principal-and-interest payment per year by adding one-twelfth each month. It does not simulate actual biweekly payment dates.</p>
         </div>
+        <p><a href="#summary-title">View estimate</a></p>
       </section>
 
       <div class="results">
         <section class="panel" aria-labelledby="summary-title">
         <h2 class="section-title" id="summary-title">Mortgage Payment Calculator</h2>
+          <div class="result-primary">
+            <span>Estimated first-month housing cost</span>
+            <strong id="monthlyTotal">$0</strong>
+          </div>
+          <div class="result-breakdown">
+            <h3>First-month cost breakdown</h3>
+            <div class="bars" id="bars"></div>
+            <p class="note" id="pmiNote">PMI is estimated from your down payment and loan balance.</p>
+          </div>
+          <h3 class="result-details-title">Loan details</h3>
           <div class="summary-grid">
-            <div class="metric primary">
-              <span>Estimated monthly payment</span>
-              <strong id="monthlyTotal">$0</strong>
-            </div>
             <div class="metric">
               <span>Loan amount</span>
               <strong id="loanAmount">$0</strong>
@@ -1036,7 +1073,7 @@
               <strong id="payoffDate">-</strong>
             </div>
             <div class="metric">
-              <span>Total paid</span>
+              <span>Payments during loan term</span>
               <strong id="totalPaid">$0</strong>
             </div>
             <div class="metric">
@@ -1049,14 +1086,11 @@
             </div>
           </div>
 
+          <p class="note">Based on your current inputs. Tax and insurance values are editable estimates, not location-specific quotes. Excludes closing costs, maintenance, utilities, and other ownership costs. Payments during the loan term exclude the down payment and costs after payoff.</p>
           <div class="takeaways" id="takeaways" aria-label="Key mortgage takeaways"></div>
           <p><a href="#report">View your mortgage analysis report</a></p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
 
-          <div class="breakdown">
-            <div class="bars" id="bars"></div>
-            <p class="note" id="pmiNote">PMI is estimated from your down payment and loan balance.</p>
-          </div>
         </section>
 
         <section class="panel" aria-labelledby="chart-title">
@@ -1084,7 +1118,7 @@
               <button type="button" id="printPage">Print</button>
             </div>
           </div>
-          <p class="note">Share links contain your inputs. Anyone with the link can see them.</p>
+          <p class="note">Extra is included in Principal, not an additional charge to add again. Share links contain your inputs; anyone with the link can see them.</p>
           <div class="table-scroll">
             <table>
               <thead id="scheduleHead"></thead>
@@ -1101,7 +1135,7 @@
         <section class="panel" id="report" aria-labelledby="report-title">
           <h2 class="section-title" id="report-title">Mortgage Analysis Report</h2>
           <p>Preview a printable report based on your current calculation, including your assumptions, payment breakdown, and complete monthly amortization schedule.</p>
-          <p><strong>Free preview available.</strong> A paid report is planned for $4.99 USD as a one-time purchase. Purchasing is not available yet.</p>
+          <p><strong>Free full report preview.</strong> No purchase is required. A paid report is planned for $4.99 USD, but is not available yet.</p>
           <div class="table-actions"><button type="button" id="previewReport">Open report preview</button></div>
           <p class="note">The preview can be printed or saved as a PDF using your browser. It is generated in your browser.</p>
         </section>
@@ -1137,7 +1171,7 @@
           <p>The payoff date uses the loan start month, standard payment, extra monthly payment, and biweekly payment setting. If you add extra principal or choose biweekly payments, the calculator estimates how many months are saved compared with a standard monthly payment schedule.</p>
 
           <h3>Biweekly Mortgage Calculator</h3>
-          <p>The biweekly mortgage calculator setting estimates 26 half-payments per year. This is roughly equal to one extra monthly payment each year, which can shorten the mortgage term and reduce total interest without adding a separate lump-sum payment.</p>
+          <p>A biweekly plan generally involves 26 half-payments per year. This calculator approximates its effect by spreading one extra annual principal-and-interest payment evenly across 12 months. It does not model actual biweekly payment dates, and lender practices can differ.</p>
 
           <h3>HOA fees and total housing cost</h3>
           <p>HOA fees are not part of the mortgage loan and do not reduce your balance. They are included here because many buyers want one monthly housing cost estimate that includes principal, interest, taxes, insurance, PMI, and homeowners association dues.</p>
@@ -1166,7 +1200,7 @@
           <p>A 15-year mortgage usually has a higher monthly payment but much lower total interest. A 30-year mortgage usually has a lower monthly payment but costs more interest over time. The right choice depends on cash flow, savings goals, and risk tolerance.</p>
 
           <h3>What is a bi-weekly mortgage payment?</h3>
-          <p>Biweekly payment plans split the monthly payment in half and make 26 payments per year. That equals roughly 13 monthly payments per year, which can reduce interest and shorten the loan term.</p>
+          <p>Biweekly plans can involve 26 half-payments per year. This calculator approximates an extra annual principal-and-interest payment spread across 12 months; it does not simulate each payment date. Actual servicing and savings may differ.</p>
 
           <h3>How does the mortgage payoff calculator work?</h3>
           <p>The payoff estimate starts with the selected loan term and then applies extra monthly principal payments or biweekly payment savings. The result shows the estimated payoff date and the number of months saved.</p>
@@ -1288,7 +1322,7 @@
       const monthlyRate = annualRate / 100 / 12;
       if (principal <= 0 || months <= 0) return 0;
       if (monthlyRate === 0) return principal / months;
-      return principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+      return principal * monthlyRate / -Math.expm1(-months * Math.log1p(monthlyRate));
     }
 
     function parseStartDate(value) {
@@ -1543,7 +1577,7 @@
       const thirtyMonthly = thirty.rows[0] ? thirty.rows[0].payment : 0;
       const monthlyIncrease = Math.max(0, fifteenMonthly - thirtyMonthly);
       const interestSaved = Math.max(0, thirty.totalInterest - fifteen.totalInterest);
-      els.comparisonNote.textContent = `A 15-year mortgage would save about ${money.format(interestSaved)} in interest, but increases the estimated monthly payment by about ${moneyCents.format(monthlyIncrease)} compared with a 30-year mortgage.`;
+      els.comparisonNote.textContent = input.principal > 0 ? `Using the same ${input.annualRate}% interest rate and payment settings for both terms, the 15-year estimate saves about ${money.format(interestSaved)} in interest and increases the first-month cost by about ${moneyCents.format(monthlyIncrease)}. Actual rates may differ by term.` : "There is no loan balance to compare.";
       els.comparison.innerHTML = uniqueTerms.map((term) => {
         const termInput = { ...input, termYears: term, months: term * 12 };
         const result = buildSchedule(termInput);
@@ -1551,16 +1585,16 @@
         return `
           <div class="compare-card">
             <h3>${term}-year mortgage</h3>
-            <p><strong>${moneyCents.format(first ? first.payment : 0)}</strong> estimated monthly payment</p>
+            <p><strong>${moneyCents.format(first ? first.payment : input.monthlyTax + input.monthlyInsurance + input.monthlyHoa)}</strong> estimated first-month housing cost</p>
             <p>${money.format(result.totalInterest)} total interest</p>
-            <p>Payoff time: ${term} years</p>
+            <p>Estimated payoff: ${result.rows.length ? `${result.rows.length} months` : "No loan balance"}</p>
           </div>
         `;
       }).join("");
     }
 
     function renderTakeaways(input, result, standardResult) {
-      const first = result.rows[0] || { payment: 0, pmi: 0 };
+      const first = result.rows[0] || { payment: input.monthlyTax + input.monthlyInsurance + input.monthlyHoa, pmi: 0 };
       const standardPayoff = standardResult.rows.length
         ? addMonths(input.startDate, standardResult.rows.length - 1)
         : input.startDate;
@@ -1568,13 +1602,13 @@
         ? addMonths(input.startDate, result.rows.length - 1)
         : input.startDate;
       const interestSaved = Math.max(0, standardResult.totalInterest - result.totalInterest);
-      const pmiStopRow = result.rows.find((row, index, rows) => row.pmi > 0 && (!rows[index + 1] || rows[index + 1].pmi === 0));
+      const pmiStopRow = result.rows.find((row, index, rows) => row.pmi > 0 && rows[index + 1] && rows[index + 1].pmi === 0);
       const pmiStopText = pmiStopRow
         ? `PMI adds ${moneyCents.format(first.pmi)} to the first payment and is estimated to stop around ${formatMonth(addMonths(pmiStopRow.date, 1))}.`
-        : "PMI is not included in this estimate based on the current down payment and PMI settings.";
+        : result.firstPmi > 0 ? `PMI adds ${moneyCents.format(first.pmi)} to the first payment and is included until payoff in this estimate.` : "PMI is not included in this estimate based on the current down payment and PMI settings.";
       const extraText = interestSaved > 0
         ? `Your extra payment settings save about ${money.format(interestSaved)} in interest and move payoff from ${formatMonth(standardPayoff)} to ${formatMonth(payoff)}.`
-        : `Your estimated payoff date is ${formatMonth(payoff)} based on the current loan term and payment settings.`;
+        : result.rows.length ? `Your estimated payoff date is ${formatMonth(payoff)} based on the current loan term and payment settings.` : "There is no loan balance to repay.";
       const fifteen = buildSchedule({ ...input, termYears: 15, months: 180 });
       const thirty = buildSchedule({ ...input, termYears: 30, months: 360 });
       const fifteenMonthly = fifteen.rows[0] ? fifteen.rows[0].payment : 0;
@@ -1583,10 +1617,10 @@
       const termInterestSaved = Math.max(0, thirty.totalInterest - fifteen.totalInterest);
 
       els.takeaways.innerHTML = [
-        `Your estimated monthly housing cost is ${moneyCents.format(first.payment)}, including taxes, insurance, PMI, and HOA fees if entered.`,
+        `Your estimated first-month housing cost is ${moneyCents.format(first.payment)}, including taxes, insurance, PMI, HOA fees and optional extra principal if applicable.`,
         pmiStopText,
         extraText,
-        `A 15-year mortgage saves about ${money.format(termInterestSaved)} in interest but raises the estimated monthly payment by about ${moneyCents.format(monthlyIncrease)} versus a 30-year mortgage.`
+        `At the same assumed interest rate, a 15-year mortgage saves about ${money.format(termInterestSaved)} in interest but raises the estimated first-month cost by about ${moneyCents.format(monthlyIncrease)} versus a 30-year mortgage.`
       ].map((text) => `<div class="takeaway">${text}</div>`).join("");
     }
 
@@ -1645,11 +1679,10 @@
       latestRows = result.rows;
       latestAnnualRows = buildAnnualRows(result.rows);
       const first = result.rows[0] || {
-        payment: 0,
-        taxes: 0,
-        insurance: 0,
-        hoa: 0,
-        pmi: 0
+        payment: input.monthlyTax + input.monthlyInsurance + input.monthlyHoa,
+        principalPaid: 0, interest: 0, extraPrincipal: 0,
+        taxes: input.monthlyTax, insurance: input.monthlyInsurance,
+        hoa: input.monthlyHoa, pmi: 0
       };
       const monthlyTotal = first.payment;
       const standardResult = buildSchedule({ ...input, extraPayment: 0, paymentFrequency: "monthly" });
@@ -1660,14 +1693,15 @@
       els.loanAmount.textContent = money.format(input.principal);
       els.downRatio.textContent = (result.downRatio * 100).toFixed(1) + "%";
       els.totalInterest.textContent = money.format(result.totalInterest);
-      els.payoffDate.textContent = formatMonth(payoff);
+      els.payoffDate.textContent = result.rows.length ? formatMonth(payoff) : "No loan balance";
       els.totalPaid.textContent = money.format(result.totalPaid);
       els.totalPmi.textContent = money.format(result.totalPmi);
       els.monthsSaved.textContent = savedMonths.toString();
-      els.tableSummary.textContent = `${result.rows.length} monthly payments ending in ${formatMonth(payoff)}. Extra payments and bi-weekly estimates are applied to principal.`;
+      els.tableSummary.textContent = result.rows.length ? `${result.rows.length} estimated monthly payments ending in ${formatMonth(payoff)}. Extra payments are applied to principal. The biweekly option approximates an extra annual payment spread monthly.` : "No loan balance. Property tax, insurance, and HOA costs may still apply.";
 
       els.bars.innerHTML = [
-        buildBar("Principal & interest", result.basePI, monthlyTotal, "#176b87"),
+        buildBar("Principal & interest", first.principalPaid + first.interest - first.extraPrincipal, monthlyTotal, "#176b87"),
+        buildBar("Extra principal", first.extraPrincipal, monthlyTotal, "#0071e3"),
         buildBar("Property tax", first.taxes, monthlyTotal, "#2f7d59"),
         buildBar("Insurance", first.insurance, monthlyTotal, "#9a5b13"),
         buildBar("HOA", first.hoa, monthlyTotal, "#4f5a68"),
@@ -1770,10 +1804,11 @@
       const input = getInputs();
       const result = buildSchedule(input);
       const first = result.rows[0];
+      const firstHousingCost = first ? first.payment : input.monthlyTax + input.monthlyInsurance + input.monthlyHoa;
       const doc = report.document;
       doc.title = "Mortgage Analysis Report Preview";
       const style = doc.createElement("style");
-      style.textContent = "body{font:14px/1.5 system-ui,sans-serif;color:#20242c;max-width:980px;margin:32px auto;padding:0 18px}h1{font-size:26px}h2{margin-top:28px;font-size:19px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;text-align:right;border-bottom:1px solid #ddd}th:first-child,td:first-child{text-align:left}button{padding:10px 14px;cursor:pointer} .scroll{overflow-x:auto}@media print{button{display:none}body{margin:0}thead{display:table-header-group}tr{break-inside:avoid}}";
+      style.textContent = "*{box-sizing:border-box}body{font:14px/1.5 system-ui,sans-serif;color:#20242c;max-width:900px;margin:36px auto;padding:0 20px}h1{font-size:28px;line-height:1.2;margin:0 0 8px}h2{margin:32px 0 12px;font-size:19px}p{margin:8px 0}.muted{color:#596675}.hero{padding:20px 0;border-bottom:1px solid #dce2e8}.hero strong{display:block;font-size:36px;line-height:1.2;color:#126b83;overflow-wrap:anywhere}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}.item{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e7ebef}.item span:last-child{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}.note{color:#596675;font-size:12px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;text-align:right;border-bottom:1px solid #ddd;white-space:nowrap}th:first-child,td:first-child{text-align:left}button{padding:10px 14px;border:1px solid #c9d4da;border-radius:6px;background:#fff;cursor:pointer;font:inherit;font-weight:650}.scroll{overflow-x:auto}@media(max-width:560px){.grid{grid-template-columns:1fr}}@media print{button{display:none}body{margin:0;padding:0}thead{display:table-header-group}tr{break-inside:avoid}.scroll{overflow:visible}table{font-size:8px}th,td{padding:3px 2px}}";
       doc.head.append(style);
       const add = (tag, value, parent = doc.body) => {
         const element = doc.createElement(tag);
@@ -1781,34 +1816,56 @@
         parent.append(element);
         return element;
       };
+      const item = (parent, label, value) => {
+        const row = doc.createElement("div");
+        row.className = "item";
+        add("span", label, row);
+        add("span", value, row);
+        parent.append(row);
+      };
+      const grid = () => {
+        const container = doc.createElement("div");
+        container.className = "grid";
+        doc.body.append(container);
+        return container;
+      };
       add("h1", "Mortgage Analysis Report Preview");
-      add("p", "Free preview. Estimates only; not a loan offer or financial advice.");
+      add("p", "Free report. Estimates only; not a loan offer or financial advice.").className = "muted";
       const print = add("button", "Print or save as PDF");
       print.addEventListener("click", () => report.print());
-      add("h2", "Loan assumptions");
+      const hero = doc.createElement("div");
+      hero.className = "hero";
+      add("span", "Estimated first-month housing cost", hero);
+      add("strong", moneyCents.format(firstHousingCost), hero);
+      add("span", "Based on your current inputs", hero).className = "muted";
+      doc.body.append(hero);
+      add("h2", "First-month cost breakdown");
+      const costs = grid();
       [
-        `Home price: ${moneyCents.format(input.homePrice)}`,
-        `Down payment: ${moneyCents.format(input.downPayment)}`,
-        `Loan amount: ${moneyCents.format(input.principal)}`,
-        `Annual interest rate: ${input.annualRate}%`,
-        `Loan term: ${input.termYears} years`,
-        `First payment: ${formatMonth(input.startDate)}`,
-        `Extra principal per month: ${moneyCents.format(input.extraPayment)}`,
-        `Payment frequency: ${input.paymentFrequency === "biweekly" ? "Biweekly estimate" : "Monthly"}`
-      ].forEach(value => add("p", value));
-      add("h2", "Estimated payment and costs");
+        ["Scheduled principal and interest", first ? first.principalPaid + first.interest - first.extraPrincipal : 0],
+        ["Extra principal, including biweekly estimate", first ? first.extraPrincipal : 0],
+        ["Property tax", input.monthlyTax],
+        ["Homeowners insurance", input.monthlyInsurance],
+        ["PMI", first ? first.pmi : 0],
+        ["HOA fees", input.monthlyHoa]
+      ].forEach(([label, value]) => item(costs, label, moneyCents.format(value)));
+      add("h2", "Loan overview");
+      const overview = grid();
       [
-        `First monthly payment: ${moneyCents.format(first ? first.payment : 0)}`,
-        `First principal and interest payment: ${moneyCents.format(first ? first.principalPaid + first.interest : 0)}`,
-        `Monthly property tax: ${moneyCents.format(input.monthlyTax)}`,
-        `Monthly homeowners insurance: ${moneyCents.format(input.monthlyInsurance)}`,
-        `First monthly PMI: ${moneyCents.format(first ? first.pmi : 0)}`,
-        `Monthly HOA fees: ${moneyCents.format(input.monthlyHoa)}`,
-        `Estimated total interest: ${moneyCents.format(result.totalInterest)}`,
-        `Estimated total payments: ${moneyCents.format(result.totalPaid)}`,
-        `Estimated payoff: ${result.rows.length ? result.rows[result.rows.length - 1].label : "No loan balance"}`
-      ].forEach(value => add("p", value));
-      add("p", "Taxes, insurance, HOA fees and PMI are estimates. PMI and biweekly payments use simplified assumptions; actual lender calculations may differ. Total payments include estimated recurring costs during the loan term, but not the down payment.");
+        ["Home price", moneyCents.format(input.homePrice)],
+        ["Down payment", moneyCents.format(input.downPayment)],
+        ["Loan amount", moneyCents.format(input.principal)],
+        ["Annual interest rate", `${input.annualRate}%`],
+        ["Loan term", `${input.termYears} years`],
+        ["First payment", formatMonth(input.startDate)],
+        ["Extra principal per month", moneyCents.format(input.extraPayment)],
+        ["Payment schedule", input.paymentFrequency === "biweekly" ? "Biweekly estimate" : "Monthly"],
+        ["Estimated total interest", moneyCents.format(result.totalInterest)],
+        ["Payments during loan term", moneyCents.format(result.totalPaid)],
+        ["Estimated payoff", result.rows.length ? result.rows[result.rows.length - 1].label : "No loan balance"]
+      ].forEach(([label, value]) => item(overview, label, value));
+      add("h2", "Important assumptions");
+      add("p", "Tax and insurance values are editable estimates, not location-specific quotes. Closing costs, maintenance, utilities and other ownership costs are excluded. PMI uses a simplified estimate. The biweekly option spreads one extra annual principal-and-interest payment over 12 months; it does not model actual biweekly payment dates. Actual lender calculations may differ. Payments during the loan term include estimated recurring costs during that period, but not the down payment or costs after payoff.").className = "note";
       add("h2", "Monthly amortization schedule");
       const scroll = doc.createElement("div");
       scroll.className = "scroll";
