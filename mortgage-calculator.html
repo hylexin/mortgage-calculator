@@ -278,6 +278,10 @@
       grid-template-columns: 1fr;
     }
 
+    body:not(.ads-live) .hero {
+      grid-template-columns: 1fr;
+    }
+
     .wide-ad {
       margin: 0 0 18px;
     }
@@ -886,7 +890,7 @@
     <header class="hero">
       <div>
         <h1>Mortgage Calculator</h1>
-        <p class="intro">Estimate your monthly mortgage payment, including principal, interest, property taxes, homeowners insurance, PMI, HOA fees, and extra payments. No signup required. Your inputs stay in your browser.</p>
+        <p class="intro">Estimate your monthly mortgage payment, including principal, interest, property taxes, homeowners insurance, PMI, HOA fees, and extra payments. No signup required. Calculations run in your browser.</p>
         <div class="trust-badges" aria-label="Calculator trust notes">
           <span class="trust-badge">Free</span>
           <span class="trust-badge">No signup</span>
@@ -1046,6 +1050,7 @@
           </div>
 
           <div class="takeaways" id="takeaways" aria-label="Key mortgage takeaways"></div>
+          <p><a href="#report">View your mortgage analysis report</a></p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
 
           <div class="breakdown">
@@ -1079,6 +1084,7 @@
               <button type="button" id="printPage">Print</button>
             </div>
           </div>
+          <p class="note">Share links contain your inputs. Anyone with the link can see them.</p>
           <div class="table-scroll">
             <table>
               <thead id="scheduleHead"></thead>
@@ -1091,6 +1097,13 @@
           <h2 class="section-title" id="compare-title">15-Year vs. 30-Year Mortgage</h2>
           <p class="comparison-note" id="comparisonNote">Compare the monthly payment and lifetime interest difference between common U.S. mortgage terms.</p>
           <div class="comparison-grid" id="comparison"></div>
+        </section>
+        <section class="panel" id="report" aria-labelledby="report-title">
+          <h2 class="section-title" id="report-title">Mortgage Analysis Report</h2>
+          <p>Preview a printable report based on your current calculation, including your assumptions, payment breakdown, and complete monthly amortization schedule.</p>
+          <p><strong>Free preview available.</strong> A paid report is planned for $4.99 USD as a one-time purchase. Purchasing is not available yet.</p>
+          <div class="table-actions"><button type="button" id="previewReport">Open report preview</button></div>
+          <p class="note">The preview can be printed or saved as a PDF using your browser. It is generated in your browser.</p>
         </section>
       </div>
     </div>
@@ -1174,10 +1187,10 @@
           <p>Yes. Use the Download CSV button to save the mortgage amortization schedule and open it in a spreadsheet.</p>
 
           <h3>How does the share link work?</h3>
-          <p>The share link stores your inputs in the page URL. It does not require an account or send your numbers to a server.</p>
+          <p>The share link includes your inputs in the URL. Anyone with the link can see them, and the URL may be recorded by hosting services, browsers, and analytics providers when opened.</p>
 
           <h3>Does this page save my mortgage information?</h3>
-          <p>The calculator saves inputs in your browser so the page is easier to revisit. This static page does not upload your inputs to a server.</p>
+          <p>The calculator saves inputs in your browser so the page is easier to revisit. Calculations run locally. If you use a share link, its URL contains your inputs and may be recorded when opened.</p>
         </section>
 
         <section class="content-section disclaimer" id="disclaimer">
@@ -1193,11 +1206,12 @@
     </div>
 
     <footer>
-      <p>Privacy note: this static calculator runs in your browser. It does not require an account, and the numbers you enter are not sent to a server by this page.</p>
+      <p>Privacy note: calculations run in your browser without an account. Share links include your inputs in the URL. See our privacy policy for details.</p>
       <p>Last updated: June 18, 2026. Ads may appear on the site to help keep the calculator free.</p>
       <div class="footer-links">
         <a href="./about.html">About</a>
         <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms of Service</a>
         <a href="./contact.html">Contact</a>
       </div>
     </footer>
@@ -1242,6 +1256,7 @@
       downloadCsv: document.querySelector("#downloadCsv"),
       shareCalculation: document.querySelector("#shareCalculation"),
       printPage: document.querySelector("#printPage"),
+      previewReport: document.querySelector("#previewReport"),
       useSampleValues: document.querySelector("#useSampleValues"),
       comparisonNote: document.querySelector("#comparisonNote"),
       comparison: document.querySelector("#comparison"),
@@ -1746,6 +1761,70 @@
       renderSchedule();
     });
 
+    function previewReport() {
+      const report = window.open("", "_blank");
+      if (!report) {
+        alert("Please allow pop-ups to open the report preview.");
+        return;
+      }
+      const input = getInputs();
+      const result = buildSchedule(input);
+      const first = result.rows[0];
+      const doc = report.document;
+      doc.title = "Mortgage Analysis Report Preview";
+      const style = doc.createElement("style");
+      style.textContent = "body{font:14px/1.5 system-ui,sans-serif;color:#20242c;max-width:980px;margin:32px auto;padding:0 18px}h1{font-size:26px}h2{margin-top:28px;font-size:19px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;text-align:right;border-bottom:1px solid #ddd}th:first-child,td:first-child{text-align:left}button{padding:10px 14px;cursor:pointer} .scroll{overflow-x:auto}@media print{button{display:none}body{margin:0}thead{display:table-header-group}tr{break-inside:avoid}}";
+      doc.head.append(style);
+      const add = (tag, value, parent = doc.body) => {
+        const element = doc.createElement(tag);
+        element.textContent = value;
+        parent.append(element);
+        return element;
+      };
+      add("h1", "Mortgage Analysis Report Preview");
+      add("p", "Free preview. Estimates only; not a loan offer or financial advice.");
+      const print = add("button", "Print or save as PDF");
+      print.addEventListener("click", () => report.print());
+      add("h2", "Loan assumptions");
+      [
+        `Home price: ${moneyCents.format(input.homePrice)}`,
+        `Down payment: ${moneyCents.format(input.downPayment)}`,
+        `Loan amount: ${moneyCents.format(input.principal)}`,
+        `Annual interest rate: ${input.annualRate}%`,
+        `Loan term: ${input.termYears} years`,
+        `First payment: ${formatMonth(input.startDate)}`,
+        `Extra principal per month: ${moneyCents.format(input.extraPayment)}`,
+        `Payment frequency: ${input.paymentFrequency === "biweekly" ? "Biweekly estimate" : "Monthly"}`
+      ].forEach(value => add("p", value));
+      add("h2", "Estimated payment and costs");
+      [
+        `First monthly payment: ${moneyCents.format(first ? first.payment : 0)}`,
+        `First principal and interest payment: ${moneyCents.format(first ? first.principalPaid + first.interest : 0)}`,
+        `Monthly property tax: ${moneyCents.format(input.monthlyTax)}`,
+        `Monthly homeowners insurance: ${moneyCents.format(input.monthlyInsurance)}`,
+        `First monthly PMI: ${moneyCents.format(first ? first.pmi : 0)}`,
+        `Monthly HOA fees: ${moneyCents.format(input.monthlyHoa)}`,
+        `Estimated total interest: ${moneyCents.format(result.totalInterest)}`,
+        `Estimated total payments: ${moneyCents.format(result.totalPaid)}`,
+        `Estimated payoff: ${result.rows.length ? result.rows[result.rows.length - 1].label : "No loan balance"}`
+      ].forEach(value => add("p", value));
+      add("p", "Taxes, insurance, HOA fees and PMI are estimates. PMI and biweekly payments use simplified assumptions; actual lender calculations may differ. Total payments include estimated recurring costs during the loan term, but not the down payment.");
+      add("h2", "Monthly amortization schedule");
+      const scroll = doc.createElement("div");
+      scroll.className = "scroll";
+      doc.body.append(scroll);
+      const table = doc.createElement("table");
+      scroll.append(table);
+      const head = table.createTHead().insertRow();
+      ["Date", "Payment", "Principal", "Interest", "Tax", "Insurance", "PMI", "HOA", "Balance"].forEach(value => add("th", value, head));
+      const body = table.createTBody();
+      result.rows.forEach(row => {
+        const tr = body.insertRow();
+        [row.label, ...[row.payment, row.principalPaid, row.interest, row.taxes, row.insurance, row.pmi, row.hoa, row.balance].map(value => moneyCents.format(value))].forEach(value => add("td", value, tr));
+      });
+    }
+
+    els.previewReport.addEventListener("click", previewReport);
     els.downloadCsv.addEventListener("click", downloadCsv);
     els.shareCalculation.addEventListener("click", shareCalculation);
     els.printPage.addEventListener("click", () => window.print());
