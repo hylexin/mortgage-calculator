@@ -318,22 +318,6 @@
       font-weight: 720;
     }
 
-    .input-helper {
-      display: grid;
-      gap: 10px;
-      margin: 0 0 18px;
-      padding: 14px;
-      border: 1px solid var(--line-soft);
-      border-radius: var(--radius);
-      background: #f5f5f7;
-    }
-
-    .input-helper p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
     .input-group-title {
       margin: 18px 0 2px;
       padding-top: 16px;
@@ -502,6 +486,28 @@
       line-height: 1.55;
     }
 
+    .report-action {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .report-action button {
+      min-height: 40px;
+      padding: 8px 16px;
+      border-radius: 7px;
+      background: #0069c7;
+      color: #fff;
+      font-size: 14px;
+      box-shadow: none;
+    }
+
+    .report-action button:hover {
+      background: #00539f;
+    }
+
     .takeaways {
       display: grid;
       gap: 10px;
@@ -654,6 +660,18 @@
       font-size: 15px;
     }
 
+    .compare-card.is-current {
+      border-color: #8db8df;
+      background: #f5faff;
+    }
+
+    .compare-card .term-label {
+      margin: 0 0 6px;
+      color: #075a9f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     .compare-card p {
       margin: 7px 0 0;
       color: var(--muted);
@@ -666,10 +684,11 @@
 
     .table-head {
       display: flex;
-      align-items: flex-start;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 14px;
-      padding: 20px 22px;
+      padding: 18px 22px;
       border-bottom: 1px solid var(--line-soft);
     }
 
@@ -994,11 +1013,6 @@
       <section class="inputs" aria-labelledby="input-title">
         <h2 class="section-title" id="input-title">Mortgage Details</h2>
 
-        <div class="input-helper">
-          <p>Not sure what to enter? Start with sample values and adjust them.</p>
-          <button type="button" id="useSampleValues">Use sample values</button>
-        </div>
-
         <h3 class="input-group-title">Loan Details</h3>
 
         <div class="field">
@@ -1147,7 +1161,7 @@
 
           <p class="result-assumptions">Tax and insurance are editable estimates, not local quotes. Loan-term costs include payments, taxes, insurance, PMI and HOA fees while the loan is outstanding, but exclude the down payment, closing costs, maintenance, utilities and costs after payoff.</p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
-          <div id="report"><button type="button" id="previewReport">Preview report</button></div>
+          <div class="report-action" id="report"><button type="button" id="previewReport">View report preview</button></div>
 
         </section>
 
@@ -1189,7 +1203,7 @@
         </section>
 
         <section class="panel" aria-labelledby="compare-title">
-          <h2 class="section-title" id="compare-title">15-Year vs. 30-Year Mortgage</h2>
+          <h2 class="section-title" id="compare-title">Compare Mortgage Terms</h2>
           <p class="comparison-note" id="comparisonNote">Compare the monthly payment and lifetime interest difference between common U.S. mortgage terms.</p>
           <div class="comparison-grid" id="comparison"></div>
         </section>
@@ -1339,7 +1353,6 @@
       monthlyView: document.querySelector("#monthlyView"),
       annualView: document.querySelector("#annualView"),
       previewReport: document.querySelector("#previewReport"),
-      useSampleValues: document.querySelector("#useSampleValues"),
       comparisonNote: document.querySelector("#comparisonNote"),
       comparison: document.querySelector("#comparison"),
       costChart: document.querySelector("#costChart"),
@@ -1618,21 +1631,17 @@
     }
 
     function renderComparison(input) {
-      const terms = [15, 30, input.termYears];
-      const uniqueTerms = [...new Set(terms)].sort((a, b) => a - b);
-      const fifteen = buildSchedule({ ...input, termYears: 15, months: 180 });
-      const thirty = buildSchedule({ ...input, termYears: 30, months: 360 });
-      const fifteenMonthly = fifteen.rows[0] ? fifteen.rows[0].payment : 0;
-      const thirtyMonthly = thirty.rows[0] ? thirty.rows[0].payment : 0;
-      const monthlyIncrease = Math.max(0, fifteenMonthly - thirtyMonthly);
-      const interestSaved = Math.max(0, thirty.totalInterest - fifteen.totalInterest);
-      els.comparisonNote.textContent = input.principal > 0 ? `Using the same ${input.annualRate}% interest rate and payment settings for both terms, the 15-year estimate saves about ${money.format(interestSaved)} in interest and increases the first-month cost by about ${moneyCents.format(monthlyIncrease)}. Actual rates may differ by term.` : "There is no loan balance to compare.";
-      els.comparison.innerHTML = uniqueTerms.map((term) => {
+      const referenceTerms = input.termYears === 15 ? [20, 30]
+        : input.termYears === 30 ? [15, 20] : [15, 30];
+      const terms = [input.termYears, ...referenceTerms];
+      els.comparisonNote.textContent = input.principal > 0 ? `Your term is shown first. All estimates use the same ${input.annualRate}% interest rate and payment settings. Actual rates and available terms may differ by lender.` : "There is no loan balance to compare.";
+      els.comparison.innerHTML = terms.map((term) => {
         const termInput = { ...input, termYears: term, months: term * 12 };
         const result = buildSchedule(termInput);
         const first = result.rows[0];
         return `
-          <div class="compare-card">
+          <div class="compare-card${term === input.termYears ? " is-current" : ""}">
+            <p class="term-label">${term === input.termYears ? "Your term" : "Reference term"}</p>
             <h3>${term}-year mortgage</h3>
             <p><strong>${moneyCents.format(first ? first.payment : input.monthlyTax + input.monthlyInsurance + input.monthlyHoa)}</strong> estimated first-month housing cost</p>
             <p>${money.format(result.totalInterest)} total interest</p>
@@ -1670,25 +1679,6 @@
         <strong>With your extra payment strategy</strong>
         You could save about ${money.format(interestSaved)} in interest, pay off your loan ${formatSavedTime(savedMonths)} earlier, and reach a new estimated payoff date of ${formatMonth(payoff)}.
       `;
-    }
-
-    function useSampleValues() {
-      fields.homePrice.value = "500000";
-      fields.downPayment.value = "20";
-      fields.downPaymentType.value = "percent";
-      fields.interestRate.value = "6.75";
-      fields.loanTerm.value = "30";
-      fields.propertyTax.value = "1.2";
-      fields.propertyTaxType.value = "percent";
-      fields.insurance.value = "1500";
-      fields.insuranceType.value = "annual";
-      fields.pmi.value = "0";
-      fields.pmiType.value = "percent";
-      fields.hoa.value = "0";
-      fields.extraPayment.value = "0";
-      fields.paymentFrequency.value = "monthly";
-      fields.startDate.value = currentMonthValue();
-      calculate();
     }
 
     function calculate() {
@@ -1863,7 +1853,6 @@
     }
 
     els.previewReport.addEventListener("click", previewReport);
-    els.useSampleValues.addEventListener("click", useSampleValues);
 
     loadState();
     calculate();
