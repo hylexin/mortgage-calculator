@@ -3,14 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RX2JMN8KR5"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-RX2JMN8KR5');
-  </script>
+  <meta name="referrer" content="strict-origin">
+  <script src="./analytics-privacy.js"></script>
   <title>Mortgage Calculator with Taxes, Insurance, PMI and Amortization</title>
   <meta name="description" content="Free mortgage calculator to estimate monthly payments with taxes, insurance, PMI, HOA, extra payments, biweekly payments, payoff date, and amortization schedule. No signup required.">
   <meta name="robots" content="index,follow">
@@ -275,7 +269,7 @@
     }
 
     body:not(.ads-live) .content {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     body:not(.ads-live) .hero {
@@ -308,6 +302,7 @@
       padding: 22px;
       position: sticky;
       top: 18px;
+      min-width: 0;
     }
 
     .section-title {
@@ -365,6 +360,7 @@
     input,
     select {
       width: 100%;
+      min-width: 0;
       min-height: 44px;
       border: 1px solid transparent;
       border-radius: var(--radius);
@@ -396,9 +392,48 @@
       line-height: 1.45;
     }
 
+    .input-error, .validation-status {
+      color: #a12727;
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 6px 0 0;
+    }
+
+    input[aria-invalid="true"] {
+      border-color: #a12727;
+    }
+
+    .mobile-estimate {
+      display: none;
+      padding: 14px;
+      margin: 12px 0;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #f5f9fc;
+    }
+
+    .mobile-estimate strong { display: block; color: var(--accent); font-size: 18px; overflow-wrap: anywhere; }
+    .mobile-estimate p { margin: 5px 0; color: var(--muted); font-size: 12px; }
+    .mobile-return { display: none; font-size: 13px; }
+
+    .pmi-details { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .pmi-details summary { cursor: pointer; color: var(--text); font-weight: 650; }
+
+    .extra-comparison { margin-top: 20px; }
+    .extra-comparison h3 { margin: 0 0 8px; font-size: 16px; }
+    .extra-comparison table { min-width: 0; table-layout: fixed; font-size: 13px; }
+    .extra-comparison th, .extra-comparison td { padding: 8px 5px; white-space: normal; overflow-wrap: anywhere; text-align: right; }
+    .extra-comparison th:first-child { text-align: left; }
+    .extra-comparison p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .report-action { align-items: center; gap: 12px; flex-wrap: wrap; }
+    .report-action p { margin: 0; color: var(--muted); font-size: 12px; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
     .results {
       display: grid;
       gap: 20px;
+      min-width: 0;
     }
 
     .panel {
@@ -822,6 +857,8 @@
       align-items: start;
     }
 
+    .content > div, .content-section { min-width: 0; overflow-wrap: anywhere; }
+
     .content-section {
       padding: 26px;
       margin-bottom: 20px;
@@ -897,10 +934,15 @@
         grid-template-columns: 1fr;
       }
 
+      .layout { grid-template-columns: minmax(0, 1fr); }
+
       .inputs,
       .side-ads {
         position: static;
       }
+
+      .mobile-estimate { display: block; }
+      .mobile-return { display: inline-block; }
 
       .summary-grid,
       .chart-grid,
@@ -1010,7 +1052,7 @@
 
     <div class="layout" id="calculator">
       <section class="inputs" aria-labelledby="input-title">
-        <h2 class="section-title" id="input-title">Mortgage Details</h2>
+        <h2 class="section-title" id="input-title" tabindex="-1">Mortgage Details</h2>
 
         <h3 class="input-group-title">Loan Details</h3>
 
@@ -1040,8 +1082,15 @@
 
         <div class="field">
           <label for="loanTerm">Loan term <span class="unit">years</span></label>
-          <input id="loanTerm" type="number" min="1" step="1" value="30" inputmode="numeric">
+          <input id="loanTerm" type="number" min="1" max="100" step="1" value="30" inputmode="numeric">
           <p class="hint">The number of years used to repay the mortgage, commonly 15 or 30 years.</p>
+        </div>
+
+        <div class="mobile-estimate" aria-label="Estimated first-month housing cost">
+          <span>Estimated first-month housing cost</span>
+          <strong id="mobileTotal">$0</strong>
+          <p>Includes the editable tax, insurance and other cost estimates below.</p>
+          <a href="#summary-title">View cost breakdown</a>
         </div>
 
         <h3 class="input-group-title">Taxes, Insurance & Fees</h3>
@@ -1116,7 +1165,8 @@
 
       <div class="results">
         <section class="panel" aria-labelledby="summary-title">
-        <h2 class="section-title" id="summary-title">Mortgage Payment Calculator</h2>
+        <h2 class="section-title" id="summary-title" tabindex="-1">Mortgage Payment Calculator</h2>
+          <p id="validationStatus" class="validation-status" role="status" hidden></p>
           <div class="result-primary">
             <span>Estimated first-month housing cost</span>
             <strong id="monthlyTotal">$0</strong>
@@ -1125,6 +1175,11 @@
             <h3>First-month cost breakdown</h3>
             <div class="bars" id="bars"></div>
             <p class="note" id="pmiNote">PMI is estimated from your down payment and loan balance.</p>
+            <details class="pmi-details">
+              <summary>How this calculator estimates PMI</summary>
+              <p>For a down payment below 20%, the annual percentage option applies the entered rate to each month's starting loan balance, divided by 12. The monthly dollar option uses the entered amount. Both stop when a month's starting balance is at or below 80% of the entered home price. This simplified model is not the lender's cancellation schedule.</p>
+              <p>For certain conventional loans, eligible borrowers may request cancellation at 80% of the original value; automatic termination generally follows a scheduled 78% threshold and other conditions. Original value can differ from the purchase price, and FHA and VA rules differ. <a href="https://www.consumerfinance.gov/ask-cfpb/when-can-i-remove-private-mortgage-insurance-pmi-from-my-loan-en-202/">Learn about PMI cancellation from the CFPB</a>.</p>
+            </details>
           </div>
           <h3 class="result-details-title">Loan details</h3>
           <div class="summary-grid">
@@ -1160,7 +1215,15 @@
 
           <p class="result-assumptions">Tax and insurance are editable estimates, not local quotes. Loan-term costs include payments, taxes, insurance, PMI and HOA fees while the loan is outstanding, but exclude the down payment, closing costs, maintenance, utilities and costs after payoff.</p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
-          <div class="report-action" id="report"><button type="button" id="previewReport">View report preview</button></div>
+          <section class="extra-comparison" aria-labelledby="extraComparisonTitle">
+            <h3 id="extraComparisonTitle">Extra payment comparison</h3>
+            <table aria-label="Comparison with and without extra payments">
+              <thead><tr><th scope="col">Estimate</th><th scope="col">No extra payments</th><th scope="col">Current settings</th></tr></thead>
+              <tbody id="extraComparisonBody"></tbody>
+            </table>
+            <p>Both estimates use the same loan, tax and insurance inputs. The first is monthly with no extra principal; current settings include the entered extra amount and any biweekly approximation. The first-month housing cost includes taxes, insurance, PMI and HOA; these costs may continue after payoff. Actual savings can differ.</p>
+          </section>
+          <div class="report-action" id="report"><a class="mobile-return" href="#input-title">Back to inputs</a><p>Opens a new window; print or save as PDF.</p><button type="button" id="previewReport">View report preview</button></div>
 
         </section>
 
@@ -1335,6 +1398,8 @@
 
     const els = {
       monthlyTotal: document.querySelector("#monthlyTotal"),
+      mobileTotal: document.querySelector("#mobileTotal"),
+      validationStatus: document.querySelector("#validationStatus"),
       loanAmount: document.querySelector("#loanAmount"),
       downRatio: document.querySelector("#downRatio"),
       totalInterest: document.querySelector("#totalInterest"),
@@ -1343,6 +1408,7 @@
       totalPmi: document.querySelector("#totalPmi"),
       monthsSaved: document.querySelector("#monthsSaved"),
       extraInsight: document.querySelector("#extraInsight"),
+      extraComparisonBody: document.querySelector("#extraComparisonBody"),
       bars: document.querySelector("#bars"),
       pmiNote: document.querySelector("#pmiNote"),
       tableSummary: document.querySelector("#tableSummary"),
@@ -1376,6 +1442,65 @@
 
     function numberValue(input) {
       return Number.parseFloat(input.value) || 0;
+    }
+
+    function validateInputs() {
+      const labels = {
+        homePrice: "Home price", downPayment: "Down payment", interestRate: "Interest rate",
+        loanTerm: "Loan term", propertyTax: "Property tax", insurance: "Homeowners insurance",
+        pmi: "PMI", extraPayment: "Extra monthly payment", hoa: "HOA fees"
+      };
+      let invalid = false;
+      Object.entries(labels).forEach(([key, label]) => {
+        const field = fields[key];
+        const value = field.valueAsNumber;
+        let message = "";
+        if (field.value === "" || !Number.isFinite(value)) message = `Enter a valid ${label.toLowerCase()}.`;
+        else if (value < 0) message = `${label} cannot be negative.`;
+        else if (value > 1e12) message = `${label} must be no more than 1 trillion.`;
+        else if (key === "homePrice" && value === 0) message = "Home price must be greater than zero.";
+        else if (key === "loanTerm" && (!Number.isInteger(value) || value < 1 || value > 100)) message = "Loan term must be a whole number between 1 and 100 years.";
+        else if (key === "downPayment" && fields.downPaymentType.value === "percent" && value > 100) message = "Down payment cannot exceed 100%.";
+        else if (key === "downPayment" && fields.downPaymentType.value === "amount" && Number.isFinite(fields.homePrice.valueAsNumber) && value > fields.homePrice.valueAsNumber) message = "Down payment cannot exceed the home price.";
+        const container = field.closest(".field");
+        let error = container.querySelector(`#${key}Error`);
+        if (message) {
+          invalid = true;
+          if (!error) {
+            error = document.createElement("p");
+            error.id = `${key}Error`;
+            error.className = "input-error";
+            container.append(error);
+          }
+          error.textContent = message;
+          field.setAttribute("aria-invalid", "true");
+          field.setAttribute("aria-describedby", error.id);
+        } else {
+          if (error) error.remove();
+          field.removeAttribute("aria-invalid");
+          field.removeAttribute("aria-describedby");
+        }
+      });
+      const dateField = fields.startDate;
+      const dateContainer = dateField.closest(".field");
+      let dateError = dateContainer.querySelector("#startDateError");
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(dateField.value)) {
+        invalid = true;
+        if (!dateError) {
+          dateError = document.createElement("p");
+          dateError.id = "startDateError";
+          dateError.className = "input-error";
+          dateContainer.append(dateError);
+        }
+        dateError.textContent = "Enter a valid start month.";
+        dateField.setAttribute("aria-invalid", "true");
+        dateField.setAttribute("aria-describedby", dateError.id);
+      } else {
+        if (dateError) dateError.remove();
+        dateField.removeAttribute("aria-invalid");
+        dateField.removeAttribute("aria-describedby");
+      }
+      return !invalid;
     }
 
     function monthlyPrincipalInterest(principal, annualRate, months) {
@@ -1680,7 +1805,38 @@
       `;
     }
 
+    function renderExtraComparison(input, result, standardResult) {
+      const firstCost = schedule => schedule.rows[0] || {
+        payment: input.monthlyTax + input.monthlyInsurance + input.monthlyHoa,
+        principalPaid: 0, interest: 0, extraPrincipal: 0
+      };
+      const standard = firstCost(standardResult);
+      const current = firstCost(result);
+      const scheduledPI = row => row.principalPaid + row.interest - row.extraPrincipal;
+      const saved = Math.max(0, standardResult.totalInterest - result.totalInterest);
+      const items = [
+        ["First-month principal & interest", moneyCents.format(scheduledPI(standard)), moneyCents.format(scheduledPI(current))],
+        ["First-month extra principal", moneyCents.format(standard.extraPrincipal), moneyCents.format(current.extraPrincipal)],
+        ["First-month housing cost", moneyCents.format(standard.payment), moneyCents.format(current.payment)],
+        ["Estimated payoff periods", `${standardResult.rows.length} months`, `${result.rows.length} months`],
+        ["Estimated total interest", moneyCents.format(standardResult.totalInterest), moneyCents.format(result.totalInterest)],
+        ["Estimated interest saved", moneyCents.format(0), moneyCents.format(saved)]
+      ];
+      els.extraComparisonBody.innerHTML = items.map(([label, baseline, currentValue]) =>
+        `<tr><th scope="row">${label}</th><td>${baseline}</td><td>${currentValue}</td></tr>`
+      ).join("");
+    }
+
     function calculate() {
+      if (!validateInputs()) {
+        els.validationStatus.textContent = "Check the highlighted inputs. The last valid results are shown below and the report is unavailable until the inputs are corrected.";
+        els.validationStatus.hidden = false;
+        els.mobileTotal.textContent = "Check inputs";
+        els.previewReport.disabled = true;
+        return;
+      }
+      els.validationStatus.hidden = true;
+      els.previewReport.disabled = false;
       const input = getInputs();
       const result = buildSchedule(input);
       latestRows = result.rows;
@@ -1697,6 +1853,7 @@
       const savedMonths = Math.max(0, standardResult.rows.length - result.rows.length);
 
       els.monthlyTotal.textContent = moneyCents.format(monthlyTotal);
+      els.mobileTotal.textContent = moneyCents.format(monthlyTotal);
       els.loanAmount.textContent = money.format(input.principal);
       els.downRatio.textContent = (result.downRatio * 100).toFixed(1) + "%";
       els.totalInterest.textContent = money.format(result.totalInterest);
@@ -1721,6 +1878,7 @@
         : "Under this calculator's assumptions, PMI is not included because the down payment is at least 20%, the PMI value is zero, or there is no loan balance. Actual loan requirements may differ.";
 
       renderExtraInsight(input, result, standardResult);
+      renderExtraComparison(input, result, standardResult);
       drawDonut(els.costChart, input.principal, result.totalInterest);
       drawBalance(els.balanceChart, result.rows);
       renderComparison(input);
@@ -1738,10 +1896,11 @@
 
     function loadState() {
       try {
-        const params = new URLSearchParams(window.location.search);
-        const state = params.size
-          ? Object.fromEntries(params.entries())
-          : JSON.parse(localStorage.getItem("mortgage-calculator-state") || "{}");
+        const fallbackParams = new URLSearchParams(window.location.search);
+        const fallbackState = Object.fromEntries([...fallbackParams].filter(([key]) => Object.hasOwn(fields, key)));
+        const legacyState = typeof window.consumeLegacyMortgageState === "function"
+          ? window.consumeLegacyMortgageState() : (Object.keys(fallbackState).length ? fallbackState : null);
+        const state = legacyState || JSON.parse(localStorage.getItem("mortgage-calculator-state") || "{}");
         if (!state.startDate) state.startDate = currentMonthValue();
         Object.entries(state).forEach(([key, value]) => {
           if (fields[key]) fields[key].value = value;
@@ -1766,6 +1925,12 @@
     });
 
     function previewReport() {
+      if (!validateInputs()) {
+        calculate();
+        const invalid = document.querySelector('input[aria-invalid="true"]');
+        if (invalid) invalid.focus();
+        return;
+      }
       const report = window.open("", "_blank");
       if (!report) {
         alert("Please allow pop-ups to open the report preview.");
@@ -1780,6 +1945,7 @@
       doc.title = "Mortgage Analysis Report Preview";
       const style = doc.createElement("style");
       style.textContent = "*{box-sizing:border-box}body{font:14px/1.5 system-ui,sans-serif;color:#20242c;max-width:900px;margin:36px auto;padding:0 20px}h1{font-size:26px;line-height:1.2;margin:0 0 8px}h2{margin:32px 0 12px;font-size:19px}p{margin:8px 0}.report-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}.muted{color:#596675}.hero{padding:24px 0;border-bottom:1px solid #dce2e8}.hero strong{display:block;font-size:36px;line-height:1.2;color:#126b83;overflow-wrap:anywhere}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}.item{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e7ebef}.item span:last-child{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}.insights{padding:12px 16px;background:#f3f7f8;border-left:3px solid #16758a}.note{color:#596675;font-size:12px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px;text-align:right;border-bottom:1px solid #ddd;white-space:nowrap}th:first-child,td:first-child{text-align:left}button{padding:10px 14px;border:1px solid #126b83;border-radius:6px;background:#126b83;color:#fff;cursor:pointer;font:inherit;font-weight:650}.scroll{overflow-x:auto}@media(max-width:560px){.grid{grid-template-columns:1fr}.report-header{gap:8px}}@media print{button{display:none}body{margin:0;padding:0}thead{display:table-header-group}tr{break-inside:avoid}.scroll{overflow:visible}table{font-size:8px}th,td{padding:3px 2px}}";
+      style.textContent += "@page{margin:0.5in}";
       doc.head.append(style);
       const add = (tag, value, parent = doc.body) => {
         const element = doc.createElement(tag);
@@ -1869,7 +2035,7 @@
       ].forEach(([label, value]) => item(lifetime, label, moneyCents.format(value)));
       add("p", result.rows.length ? "These estimated totals cover the loan repayment period only. Taxes, insurance and HOA fees may continue after payoff and may change over time." : "No loan payments are projected. Property taxes, insurance and HOA fees may still apply and are not included in these zero loan-period totals.").className = "note";
       add("h2", "Important assumptions");
-      add("p", "This estimate assumes a fixed interest rate and payments made as modeled. Tax, insurance and HOA inputs are held constant, not adjusted for future changes. PMI uses a simplified estimate; actual premiums and cancellation requirements vary. Biweekly mode spreads one extra annual principal-and-interest payment over 12 months rather than modeling actual biweekly dates.").className = "note";
+      add("p", "This estimate assumes a fixed interest rate and payments made as modeled. Tax, insurance and HOA inputs are held constant, not adjusted for future changes. For a down payment below 20%, percentage-based PMI is calculated on each month's starting loan balance, divided by 12; a monthly dollar input stays fixed. This simplified estimate stops when a month's starting balance is at or below 80% of the entered home price. Actual premiums and cancellation requirements vary. Biweekly mode spreads one extra annual principal-and-interest payment over 12 months rather than modeling actual biweekly dates.").className = "note";
       add("p", "Closing costs, lender fees, APR, maintenance, utilities and other ownership costs are not calculated. The loan-period total excludes the down payment and costs after payoff. Actual lender calculations may differ; check your loan documents and local estimates.").className = "note";
       add("h2", "Monthly amortization schedule");
       add("p", "Principal includes any extra principal payment. Taxes, insurance, PMI and HOA fees are estimated monthly amounts and may not be paid to your loan servicer.").className = "note";
