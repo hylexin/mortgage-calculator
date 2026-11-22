@@ -1143,13 +1143,14 @@
         <div class="field">
           <label for="extraPayment">Extra monthly payment <span class="unit">USD</span></label>
           <input id="extraPayment" type="number" min="0" step="25" value="0" inputmode="decimal">
-          <p class="hint">Optional extra principal payment. It can reduce total interest and shorten payoff time.</p>
+          <p class="hint">Optional extra principal, starting with your first mortgage payment. It can reduce total interest and shorten payoff time.</p>
+          <a href="#extraComparisonTitle">See estimated impact</a>
         </div>
 
         <div class="field">
-          <label for="startDate">Start date <span class="unit">month</span></label>
+          <label for="startDate">First mortgage payment <span class="unit">month</span></label>
           <input id="startDate" type="month" value="2026-07">
-          <p class="hint">Used to show real calendar months and estimate the mortgage payoff date.</p>
+          <p class="hint">Enter the month of your first scheduled mortgage payment. The estimate also starts any extra monthly payments in this month.</p>
         </div>
 
         <div class="field">
@@ -1216,7 +1217,7 @@
           <p class="result-assumptions">Tax and insurance are editable estimates, not local quotes. Loan-term costs include payments, taxes, insurance, PMI and HOA fees while the loan is outstanding, but exclude the down payment, closing costs, maintenance, utilities and costs after payoff.</p>
           <div class="extra-insight" id="extraInsight" aria-live="polite"></div>
           <section class="extra-comparison" aria-labelledby="extraComparisonTitle">
-            <h3 id="extraComparisonTitle">Extra payment comparison</h3>
+            <h3 id="extraComparisonTitle" tabindex="-1">Extra payment comparison</h3>
             <table aria-label="Comparison with and without extra payments">
               <thead><tr><th scope="col">Estimate</th><th scope="col">No extra payments</th><th scope="col">Current settings</th></tr></thead>
               <tbody id="extraComparisonBody"></tbody>

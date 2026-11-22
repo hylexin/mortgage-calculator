@@ -26,6 +26,8 @@ async function main() {
       close(defaultResult.first.principalPaid + defaultResult.first.interest, independentPI, 1e-7);
       assert.equal(defaultResult.months, 360);
       assert.equal(await page.locator("#monthlyTotal").innerText(), await page.locator("#mobileTotal").innerText());
+      assert.equal(await page.locator("#startDate").inputValue(), await page.evaluate(() => currentMonthValue()));
+      assert.match(await page.locator('label[for="startDate"]').innerText(), /First mortgage payment/);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
 
       await page.locator("#extraPayment").fill("500");
@@ -39,6 +41,9 @@ async function main() {
       assert.ok(extra.interest <= extra.baseInterest && extra.last.balance >= 0 && extra.last.balance < 0.005);
       assert.ok(extra.last.principalPaid <= 400000);
       assert.match(await page.locator("#extraComparisonBody").innerText(), /232 months/);
+      await page.getByRole("link", { name: "See estimated impact" }).focus();
+      await page.keyboard.press("Enter");
+      assert.equal(await page.evaluate(() => document.activeElement.id), "extraComparisonTitle");
 
       await page.locator("#extraPayment").fill("0");
       const comparisonRows = await page.locator("#extraComparisonBody tr").allInnerTexts();
